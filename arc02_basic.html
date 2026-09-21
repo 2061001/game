@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>예제 2: 스마일 페이스</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="400" height="400" style="background: #f0f0f0;">
+
+    </canvas>
+<script>
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const x= 200;
+    const y = 200;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 100, 0, Math.PI * 2);
+    ctx.fillStyle = "gold";
+    ctx.fill();
+    ctx.strokeStyle = "orange";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    
+    ctx.beginPath();
+    ctx.arc(160, 170, 12, 0, Math.PI * 2);
+    ctx.fillStyle = "black";
+    ctx.fill();
+
+    
+    ctx.beginPath();
+    ctx.arc(240,170, 12, 0, Math.PI * 2);
+    ctx.fillStyle = "black";
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(200, 200, 50,0, Math.PI);
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = 5;
+    ctx.stroke();   
+
+</script>
+    
+</body>
+
+</html>
