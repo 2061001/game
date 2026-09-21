@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>공 잡기 게임</title>
+
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+        }
+
+        canvas {
+            border: 2px solid black;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>공 잡기 게임</h1>
+
+    <p>
+        점수 : <span id="score">0</span> ||
+        남은시간 : <span id="timerId">30</span> ||
+        속도 : <span id="speed">1</span>단계
+        <button onclick="startgmae()">게임시작</button>
+    </p>
+
+    <canvas
+        id="gameCanvas"
+        width="600"
+        height="400">
+    </canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const scoreText = document.getElementById("score");
+        const speedText = document.getElementById("speed");
+        const timeText = document.getElementById("timerId");
+
+        let score = 0;
+        let speed = 1;
+
+        let timeLeft = 30;
+        let gameRunning = false;
+        let timerId;
+        let animId;
+
+        const ball = {
+            x: 300,
+            y: 200,
+            radius: 50,
+            dx: 3,
+            dy: 2
+        };
+
+        // 게임 시작
+        function startgmae() {
+
+            if (animId) {
+                cancelAnimationFrame(animId);
+            }
+
+            score = 0;
+            timeLeft = 30;
+            speed = 1;
+
+            scoreText.textContent = score;
+            timeText.textContent = timeLeft;
+            speedText.textContent = speed;
+
+            ball.x = 300;
+            ball.y = 200;
+            ball.dx = 3;
+            ball.dy = 2;
+
+            gameRunning = true;
+
+            clearInterval(timerId);
+
+            timerId = setInterval(() => {
+
+                timeLeft--;
+
+                timeText.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    endgame();
+                }
+
+            }, 1000);
+
+            drawgame();
+        }
+
+        // 게임 종료
+        function endgame() {
+
+            gameRunning = false;
+
+            clearInterval(timerId);
+            if(animId){
+                cancelAnimationFrame(animId);
+
+            }
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.font = "32px Arial"
+            ctx.textAlign = "center";
+            ctx.fillText("게임종료!",canvas.width/2,canvas.height/2-30);
+            ctx.fillText("최종점수: "+score,canvas.width/2,canvas.height/2+30);
+
+        }
+
+        // 공 그리기
+        function drawBall() {
+
+            ctx.beginPath();
+
+            ctx.arc(
+                ball.x,
+                ball.y,
+                ball.radius,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle = "tomato";
+            ctx.fill();
+
+            ctx.closePath();
+        }
+
+        // 공 이동
+        function updateball() {
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // 좌우 벽에 튕기기
+            if (
+                ball.x + ball.radius > canvas.width ||
+                ball.x - ball.radius < 0
+            ) {
+                ball.dx = -ball.dx;
+            }
+
+            // 위아래 벽에 튕기기
+            if (
+                ball.y + ball.radius > canvas.height ||
+                ball.y - ball.radius < 0
+            ) {
+                ball.dy = -ball.dy;
+            }
+        }
+
+        // 게임 화면 그리기
+        function drawgame() {
+
+            // 화면 지우기
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            // 공 이동
+            updateball();
+
+            // 공 그리기
+            drawBall();
+
+            if (gameRunning) {
+                animId = requestAnimationFrame(drawgame);
+            }
+        }
+
+        // 공 클릭
+        canvas.addEventListener("click", function(event) {
+
+            if (!gameRunning) {
+                return;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            const dx = mouseX - ball.x;
+            const dy = mouseY - ball.y;
+
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // 공을 클릭했을 때
+            if (distance <= ball.radius) {
+                timeLeft ++;
+                timeText.textContent = timeLeft;
+                score++;
+
+                scoreText.textContent = score;
+
+                speed++;
+
+                speedText.textContent = speed;
+
+                // 공 속도 증가
+                if (ball.dx > 0) {
+                    ball.dx += 0.5;
+                } else {
+                    ball.dx -= 0.5;
+                }
+
+                if (ball.dy > 0) {
+                    ball.dy += 0.5;
+                } else {
+                    ball.dy -= 0.5;
+                }
+
+                // 공 위치 랜덤 변경
+                moveballrandom();
+            }
+            else {
+                score --;
+                scoreText.textContent = score;
+
+                speed --;
+
+                speedText.textContent = speed;
+                if(ball.dx >0){
+                    ball.dx-= 0.5;
+                }
+                else{
+                    ball.dx +=0.5;
+                }
+                if(ball.dy >0){
+                    ball.dy -= 0.5;
+                }
+                else{
+                    ball.dy += 0.5;
+                }
+            }
+        });
+
+        // 공 랜덤 이동
+        function moveballrandom() {
+
+            ball.x =
+                Math.random() *
+                (canvas.width - ball.radius * 2)
+                + ball.radius;
+
+            ball.y =
+                Math.random() *
+                (canvas.height - ball.radius * 2)
+                + ball.radius;
+        }
+
+    </script>
+
+</body>
+</html>
